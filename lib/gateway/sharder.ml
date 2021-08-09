@@ -1,33 +1,32 @@
 open Async
 open Core
-open Decompress
+open Zl
 open Websocket_async
 
 exception Invalid_Payload
 exception Failure_to_Establish_Heartbeat
-exception Inflate_error of Zlib_inflate.error
-
-let window = Window.create ~witness:B.bytes
 
 let decompress src =
-    let in_buf = Bytes.create 0xFFFF in
-    let out_buf = Bytes.create 0xFFFF in
-    let window = Window.reset window in
+    let src' = Bigstring.of_string src in
+    let i = De.bigstring_create De.io_buffer_size in
+    let o = De.bigstring_create De.io_buffer_size in
+    let allocate bits = De.make_window ~bits in
     let pos = ref 0 in
     let src_len = String.length src in
     let res = Buffer.create (src_len) in
-    Zlib_inflate.bytes in_buf out_buf
-    (fun dst ->
-        let len = min 0xFFFF (src_len - !pos) in
-        Caml.Bytes.blit_string src !pos dst 0 len;
+    let refill buf =
+        let len = min (src_len - !pos) De.io_buffer_size in
+        Bigstringaf.blit src' ~src_off:!pos buf ~dst_off:0 ~len;
         pos := !pos + len;
-        len)
-    (fun obuf len ->
-        Buffer.add_subbytes res obuf 0 len; 0xFFFF)
-    (Zlib_inflate.default ~witness:B.bytes window)
-    |> function
+        len in
+    let flush buf len =
+        let str = Bigstringaf.substring buf ~off:0 ~len in
+        Buffer.add_string res str in
+    match Higher.uncompress ~allocate ~refill ~flush i o with
     | Ok _ -> Buffer.contents res
-    | Error exn -> raise (Inflate_error exn)
+    (* This could definitely be better, I think;
+     * I'm not really sure how to throw a better exception here *)
+    | Error (`Msg m) -> raise (Failure m)
 
 module Shard = struct
     type shard =
@@ -93,9 +92,10 @@ module Shard = struct
     let dispatch ~payload shard =
         let module J = Yojson.Safe.Util in
         let seq = J.(member "s" payload |> to_int) in
-        let t = J.(member "t" payload |> to_string) in
+        let (t: string) = J.(member "t" payload |> to_string) in
         let data = J.member "d" payload in
-        let session = if t = "READY" then begin
+        let b = String.compare t "READY" in
+        let session = if b = 0 then begin
             Ivar.fill_if_empty shard.ready ();
             Clock.after (Core.Time.Span.create ~sec:5 ())
             >>> (fun _ -> Mvar.put identify_lock () >>> ignore);
