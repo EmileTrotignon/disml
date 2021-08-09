@@ -319,7 +319,8 @@ module GuildMemberRemove = struct
         if Cache.GuildMap.mem cache.guilds t.guild_id then
             let guilds = match Cache.GuildMap.find cache.guilds t.guild_id with
             | Some g ->
-                let members = List.filter g.members ~f:(fun m -> m.user.id <> t.user.id) in
+                let members = List.filter g.members ~f:(fun m ->
+                    (User_id_t.get_id m.user.id) <> (User_id.get_id t.user.id)) in
                 let data = { g with members } in
                 Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
             | None -> cache.guilds in
@@ -342,7 +343,7 @@ module GuildMemberUpdate = struct
             let guilds = match Cache.GuildMap.find cache.guilds t.guild_id with
             | Some g ->
                 let members = List.map g.members ~f:(fun m ->
-                    if m.user.id = t.user.id then
+                    if ((User_id_t.get_id m.user.id) = (User_id.get_id t.user.id)) then
                         { m with nick = t.nick; roles = t.roles }
                     else m) in
                 let data = { g with members } in
@@ -367,7 +368,7 @@ module GuildMembersChunk = struct
             let `Guild_id guild_id = t.guild_id in
             let users = List.map t.members ~f:(fun m -> m.user.id, m.user) in
             let members = List.filter_map t.members ~f:(fun m ->
-                if List.exists g.members ~f:(fun m' -> m'.user.id <> m.user.id) then
+                if List.exists g.members ~f:(fun m' -> (User_id.get_id m'.user.id) <> (User_id.get_id m.user.id)) then
                     Some (Member_t.wrap ~guild_id m)
                 else None) in
             let guilds = Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data:{ g with members } in
@@ -415,7 +416,7 @@ module GuildRoleDelete = struct
         if Cache.GuildMap.mem cache.guilds t.guild_id then
             let guilds = match Cache.GuildMap.find cache.guilds t.guild_id with
             | Some g ->
-                let roles = List.filter g.roles ~f:(fun r -> r.id <> t.role_id) in
+                let roles = List.filter g.roles ~f:(fun r -> (Role_id.get_id r.id) <> (Role_id.get_id t.role_id)) in
                 let data = { g with roles } in
                 Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
             | None -> cache.guilds in
@@ -437,7 +438,7 @@ module GuildRoleUpdate = struct
             | Some g ->
                 let `Guild_id guild_id = t.guild_id in
                 let roles = List.map g.roles ~f:(fun r ->
-                    if r.id = t.role.id then Role_t.wrap ~guild_id t.role else r) in
+                    if (Role_id.get_id r.id) = (Role_id.get_id t.role.id) then Role_t.wrap ~guild_id t.role else r) in
                 let data = { g with roles } in
                 Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
             | None -> cache.guilds in
