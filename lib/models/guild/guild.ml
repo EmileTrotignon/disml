@@ -111,7 +111,7 @@ let unban_user ~id ?reason guild =
     in Http.guild_ban_remove (get_id guild) id payload
 
 let get_member ~(id:User_id_t.t) guild =
-    match List.find ~f:(fun m -> m.user.id = id) guild.members with
+    match List.find ~f:(fun m -> (User_id_t.get_id m.user.id) = (User_id_t.get_id id)) guild.members with
     | Some m -> Deferred.Or_error.return m
     | None ->
         let `User_id id = id in
@@ -125,4 +125,4 @@ let get_channel ~(id:Channel_id_t.t) guild =
 
 (* TODO add HTTP fallback *)
 let get_role ~(id:Role_id.t) guild =
-    List.find ~f:(fun r -> r.id = id) guild.roles
+    List.find ~f:(fun r -> (Role_id.get_id r.id) = (Role_id.get_id id)) guild.roles
