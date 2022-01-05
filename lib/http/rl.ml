@@ -19,7 +19,7 @@ let route_of_path meth path =
     match meth with
     | `Delete -> if Str.string_match r_message_delete path 0 then Str.matched_string path else path
     | `Put -> if Str.string_match r_emoji path 0 then Str.matched_string path else path
-    | _ -> path    
+    | _ -> path
 
 let rl_of_header h =
     let module C = Cohttp.Header in

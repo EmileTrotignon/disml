@@ -331,7 +331,7 @@ end
 module GuildMemberUpdate = struct
     type t =
     { guild_id: Guild_id.t
-    ; nick: string option
+    (* ; nick: string option *)
     ; roles: Role_id.t list
     ; user: User_t.t
     } [@@deriving sexp, yojson { strict = false; exn = true }]
@@ -344,7 +344,7 @@ module GuildMemberUpdate = struct
             | Some g ->
                 let members = List.map g.members ~f:(fun m ->
                     if ((User_id_t.get_id m.user.id) = (User_id.get_id t.user.id)) then
-                        { m with nick = t.nick; roles = t.roles }
+                        { m with (*nick = t.nick;*) roles = t.roles }
                     else m) in
                 let data = { g with members } in
                 Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data

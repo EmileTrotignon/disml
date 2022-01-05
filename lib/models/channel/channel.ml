@@ -33,16 +33,14 @@ let delete ch =
 let get_message ~id ch =
     Http.get_message (get_id ch) id
 
-let get_messages ?(mode=`Around) ?id ?(limit=50) ch =
+let get_messages ?(mode=`Around) ?(limit=50) ch message_id =
+    let message_id = Message_id.get_id message_id in
     let kind = match mode with
-    | `Around -> "around", limit
-    | `Before -> "before", limit
-    | `After -> "after", limit
+    | `Around -> "around", message_id
+    | `Before -> "before", message_id
+    | `After -> "after", message_id
     in
-    let id = match id with
-    | Some id -> id
-    | None -> raise No_message_found in
-    Http.get_messages (get_id ch) id kind
+    Http.get_messages (get_id ch) limit kind
 
 let broadcast_typing ch =
     Http.broadcast_typing (get_id ch)

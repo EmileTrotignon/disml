@@ -38,7 +38,9 @@ type t =
 | WEBHOOK_UPDATE of WebhookUpdate.t
 | UNKNOWN of Unknown.t
 
-let event_of_yojson ~contents = function
+let event_of_yojson ~contents typ =
+    Yojson.Safe.pp Format.err_formatter contents ;
+    match typ with
     | "READY" -> READY Ready.(deserialize contents)
     | "RESUMED" -> RESUMED Resumed.(deserialize contents)
     | "CHANNEL_CREATE" -> CHANNEL_CREATE ChannelCreate.(deserialize contents)

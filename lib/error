@@ -1,0 +1,13 @@
+[Info][2021-12-05 15:34:12.350557Z] Connected successfully
+((2021-12-05 15:34:12.531804232Z)
+ ("unhandled exception"
+  ((monitor.ml.Error (Failure Event_models.GuildMemberUpdate.t.nick)
+    ("Raised at Disml__Event_models.GuildMemberUpdate.of_yojson_exn in file \"lib/models/event_models.ml\", line 332, characters 4-182"
+     "Called from Disml__Event.event_of_yojson in file \"lib/gateway/event.ml\", line 59, characters 70-90"
+     "Called from Disml__Event.handle_event in file \"lib/gateway/event.ml\", line 177, characters 4-32"
+     "Called from Disml__Sharder.Shard.dispatch in file \"lib/gateway/sharder.ml\", line 104, characters 8-37"
+     "Called from Disml__Sharder.start.(fun).ev_loop.step.(fun) in file \"lib/gateway/sharder.ml\", line 317, characters 16-45"
+     "Called from Async_kernel__Deferred0.bind.(fun) in file \"src/deferred0.ml\", line 54, characters 64-69"
+     "Called from Async_kernel__Job_queue.run_jobs in file \"src/job_queue.ml\", line 167, characters 6-47"
+     "Caught by monitor main"))
+   ((pid 501504) (thread_id 0)))))

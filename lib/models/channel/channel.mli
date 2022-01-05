@@ -36,9 +36,9 @@ val delete : t -> Channel_t.t Deferred.Or_error.t
 val get_message : id:Snowflake.t -> t -> Message_t.t Deferred.Or_error.t
 val get_messages :
     ?mode:[ `Before | `After | `Around ] ->
-    ?id:Snowflake.t ->
     ?limit:int ->
     t ->
+    Message_id.t ->
     Message_t.t list Deferred.Or_error.t
 val broadcast_typing : t -> unit Deferred.Or_error.t
 val get_pins : t -> Message_t.t list Deferred.Or_error.t

@@ -27,3 +27,22 @@ let set_name ~name role =
 
 let unhoist role =
     edit_role ~body:(`Assoc [("hoist", `Bool false)]) role
+
+
+let id role = role.id
+
+let name role = role.name
+
+let colour role = role.colour
+
+let is_hoist role = role.hoist
+
+let position role = role.position
+
+let permissions role = role.permissions
+
+let is_managed role = role.managed
+
+let is_mentionable role = role.mentionable
+
+let guild_id role = role.guild_id

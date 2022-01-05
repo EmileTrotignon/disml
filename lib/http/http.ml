@@ -47,6 +47,8 @@ module Base = struct
         Mvar.take limit >>= fun limit ->
         let process () =
             let uri = Uri.add_query_params' (process_url path) query in
+            (* Uri.pp Format.err_formatter uri ;
+            Out_channel.flush stderr ; *)
             let headers = process_request_headers () in
             let body = process_request_body body in
             (match m with
