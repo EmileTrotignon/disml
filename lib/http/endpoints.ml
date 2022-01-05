@@ -52,7 +52,7 @@ let guild gid = make (sprintf "/guilds/%d" gid)
 
 let guild_channels gid = make (sprintf "/guilds/%d/channels" gid)
 
-let guild_members gid = make (sprintf "/guilds/%d/members" gid)
+let guild_members gid = make (sprintf "/guilds/%d/members?limit=1000" gid)
 
 let guild_member gid uid = make (sprintf "/guilds/%d/members/%d" gid uid)
 

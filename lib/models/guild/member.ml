@@ -45,3 +45,17 @@ let undeafen member =
   let (`Guild_id guild_id) = member.guild_id in
   let (`User_id user_id) = member.user.id in
   Http.edit_member guild_id user_id (`Assoc [("deaf", `Bool false)])
+
+  let nick member = member.nick
+
+let roles member = member.roles
+
+let joined_at member = member.joined_at
+
+let is_deaf member = member.deaf
+
+let is_mute member = member.mute
+
+let user member = member.user
+
+let guild_id member = member.guild_id

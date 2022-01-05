@@ -37,10 +37,10 @@ val delete : t -> (Channel_t.t, string) Lwt_result.t
 val get_message : id:Snowflake.t -> t -> (Message_t.t, string) Lwt_result.t
 
 val get_messages :
-     ?mode:[`Before | `After | `Around]
-  -> ?id:Snowflake.t
+     ?mode:[< `After | `Around | `Before > `Around]
   -> ?limit:int
   -> t
+  -> Message_id.t
   -> (Message_t.t list, string) Lwt_result.t
 
 val broadcast_typing : t -> (unit, string) Lwt_result.t

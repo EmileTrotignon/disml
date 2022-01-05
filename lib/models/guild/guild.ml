@@ -73,6 +73,8 @@ let prune ~days guild = Http.guild_prune_start (get_id guild) days
 
 let request_members guild = Http.get_members (get_id guild)
 
+let request_roles guild = Http.get_roles (get_id guild)
+
 let set_afk_channel ~id guild =
   Http.edit_guild (get_id guild) (`Assoc [("afk_channel_id", `Int id)])
 
@@ -112,3 +114,53 @@ let get_channel ~(id : Channel_id_t.t) guild =
 (* TODO add HTTP fallback *)
 let get_role ~(id : Role_id.t) guild =
   List.find_opt (fun (r : Role_t.t) -> r.id = id) guild.roles
+
+let id guild = guild.id
+
+let name guild = guild.name
+
+let icon guild = guild.icon
+
+let splash guild = guild.splash
+
+let owner_id guild = guild.owner_id
+
+let region guild = guild.region
+
+let afk_channel_id guild = guild.afk_channel_id
+
+let afk_timeout guild = guild.afk_timeout
+
+let is_embed_enabled guild = guild.embed_enabled
+
+let embed_channel_id guild = guild.embed_channel_id
+
+let verification_level guild = guild.verification_level
+
+let default_message_notifications guild = guild.default_message_notifications
+
+let explicit_content_filter guild = guild.explicit_content_filter
+
+let roles guild = guild.roles
+
+let emojis guild = guild.emojis
+
+let features guild = guild.features
+
+let mfa_level guild = guild.mfa_level
+
+let application_id guild = guild.application_id
+
+let is_widget_enabled guild = guild.widget_enabled
+
+let widget_channel_id guild = guild.widget_channel_id
+
+let system_channel_id guild = guild.system_channel_id
+
+let is_large guild = guild.large
+
+let member_count guild = guild.member_count
+
+let members guild = guild.members
+
+let channels guild = guild.channels

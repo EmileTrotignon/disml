@@ -404,8 +404,7 @@ end
 
 module GuildMemberUpdate = struct
   type t =
-    { guild_id: Guild_id.t
-    ; nick: string option
+    { guild_id: Guild_id.t (* ; nick: string option *)
     ; roles: Role_id.t list
     ; user: User_t.t }
   [@@deriving sexp, yojson {strict= false; exn= true}]
