@@ -1,5 +1,9 @@
 include Role_t
 
+let hash role = Role_id.hash role.id
+
+let compare role role' = Role_id.compare role.id role'.id
+
 let edit_role ~body (role : t) =
   let (`Role_id id) = role.id in
   let (`Guild_id guild_id) = role.guild_id in
@@ -24,7 +28,6 @@ let set_colour ~colour role =
 let set_name ~name role = edit_role ~body:(`Assoc [("name", `String name)]) role
 
 let unhoist role = edit_role ~body:(`Assoc [("hoist", `Bool false)]) role
-
 
 let id role = role.id
 

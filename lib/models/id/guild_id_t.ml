@@ -2,6 +2,8 @@ type t = [`Guild_id of Snowflake.t] [@@deriving sexp]
 
 let compare (`Guild_id t) (`Guild_id t') = Base.Int.compare t t'
 
+let hash (`Guild_id t) = Int.hash t
+
 let of_yojson a : (t, string) result =
   match Snowflake.of_yojson a with
   | Ok id ->

@@ -1,6 +1,11 @@
 include module type of Role_t
 
 val delete : t -> (unit, string) Lwt_result.t
+
+val hash : t -> int
+
+val compare : t -> t -> int
+
 (** Deletes the role. This is permanent. *)
 
 val allow_mention : t -> (t, string) Lwt_result.t
@@ -21,20 +26,20 @@ val set_colour : colour:int -> t -> (t, string) Lwt_result.t
 val set_name : name:string -> t -> (t, string) Lwt_result.t
 (** Sets the name of the role. *)
 
-val id : t-> Role_id.t
+val id : t -> Role_id.t
 
-val name : t ->  string
+val name : t -> string
 
-val colour : t ->  int
+val colour : t -> int
 
-val is_hoist : t ->  bool
+val is_hoist : t -> bool
 
-val position : t ->  int
+val position : t -> int
 
-val permissions : t ->  Permissions.t
+val permissions : t -> Permissions.t
 
-val is_managed : t ->  bool
+val is_managed : t -> bool
 
-val is_mentionable : t ->  bool
+val is_mentionable : t -> bool
 
-val guild_id : t ->  Guild_id_t.t
+val guild_id : t -> Guild_id_t.t

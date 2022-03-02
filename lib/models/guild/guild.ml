@@ -115,6 +115,10 @@ let get_channel ~(id : Channel_id_t.t) guild =
 let get_role ~(id : Role_id.t) guild =
   List.find_opt (fun (r : Role_t.t) -> r.id = id) guild.roles
 
+let hash t = Guild_id.hash t.id
+
+let compare t t' = Guild_id.compare t.id t'.id
+
 let id guild = guild.id
 
 let name guild = guild.name

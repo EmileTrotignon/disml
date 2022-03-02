@@ -1,5 +1,9 @@
 type t = [`Role_id of Snowflake.t] [@@deriving sexp]
 
+let compare (`Role_id t) (`Role_id t') = Snowflake.compare t t'
+
+let hash (`Role_id t) = Snowflake.hash t
+
 let of_yojson a : (t, string) result =
   match Snowflake.of_yojson a with
   | Ok id ->

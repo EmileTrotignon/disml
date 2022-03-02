@@ -8,3 +8,7 @@ val timestamp : t -> int
 
 (** Convert a snowflake into an ISO8601 timestamp string. This is equivalent to calling [Snowflake.time_of_t snowflake |> Time.(to_string_iso8601_basic ~zone:Zone.utc)] *)
 (* val timestamp_iso : t -> string *)
+
+val hash : t -> int
+
+val compare : t -> t -> int

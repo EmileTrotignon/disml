@@ -1,4 +1,18 @@
+open Base
 include Member_t
+
+let hash member =
+  let (`Guild_id guild_id) = member.guild_id in
+  let (`User_id user_id) = member.user.id in
+  Stdlib.Hashtbl.hash (Int.hash user_id, Int.hash guild_id)
+
+let compare (member : t) (member' : t) =
+  let (`Guild_id guild_id) = member.guild_id in
+  let (`User_id user_id) = member.user.id in
+  let (`Guild_id guild_id') = member'.guild_id in
+  let (`User_id user_id') = member'.user.id in
+  let a = Int.compare user_id user_id' in
+  if a = 0 then Int.compare guild_id guild_id' else a
 
 let add_role ~(role : Role_t.t) member =
   let (`Guild_id guild_id) = member.guild_id in
@@ -46,7 +60,7 @@ let undeafen member =
   let (`User_id user_id) = member.user.id in
   Http.edit_member guild_id user_id (`Assoc [("deaf", `Bool false)])
 
-  let nick member = member.nick
+let nick member = member.nick
 
 let roles member = member.roles
 
