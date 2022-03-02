@@ -2,7 +2,9 @@ open Core
 
 type t = [`User_id of Snowflake.t] [@@deriving sexp]
 
-let compare (`User_id t) (`User_id t') = Int.compare t t'
+let hash (`User_id t) = Snowflake.hash t
+
+let compare (`User_id t) (`User_id t') = Snowflake.compare t t'
 
 let of_yojson a : (t, string) result =
   match Snowflake.of_yojson a with

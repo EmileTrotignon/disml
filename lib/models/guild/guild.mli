@@ -2,6 +2,10 @@ open Async
 
 include module type of Guild_t
 
+val hash : t -> int
+
+val compare : t -> t -> int
+
 val ban_user :
   id:Snowflake.t -> ?reason:string -> ?days:int -> t -> unit Deferred.Or_error.t
 

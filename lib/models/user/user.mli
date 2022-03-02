@@ -11,3 +11,7 @@ val default_avatar : t -> string
 
 val face : t -> string
 (** The avatar url of the user, falling back to the default avatar. *)
+
+val hash : t -> int
+
+val compare : t -> t -> int

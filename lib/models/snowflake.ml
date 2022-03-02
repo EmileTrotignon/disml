@@ -2,6 +2,10 @@ open Core
 
 type t = Int.t [@@deriving sexp]
 
+let compare = Int.compare
+
+let hash = Int.hash
+
 let of_yojson_exn d = Yojson.Safe.Util.to_string d |> Int.of_string
 
 let of_yojson d =

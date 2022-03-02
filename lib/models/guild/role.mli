@@ -2,6 +2,10 @@ open Async
 
 include module type of Role_t
 
+val hash : t -> int
+
+val compare : t -> t -> int
+
 val delete : t -> unit Deferred.Or_error.t
 (** Deletes the role. This is permanent. *)
 

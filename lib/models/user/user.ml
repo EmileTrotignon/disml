@@ -21,3 +21,7 @@ let face user =
       Endpoints.cdn_avatar id avatar ext
   | None ->
       default_avatar user
+
+let hash user = User_id.hash user.id
+
+let compare user user' = User_id.compare user.id user'.id

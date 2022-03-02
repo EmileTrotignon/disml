@@ -2,6 +2,10 @@ open Async
 
 include module type of Member_t
 
+val compare : t -> t -> int
+
+val hash : t -> int
+
 val add_role : role:Role_t.t -> Member_t.t -> unit Deferred.Or_error.t
 (** Adds a role to the member. *)
 
