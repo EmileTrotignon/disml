@@ -31,6 +31,9 @@ val unmute : Member_t.t -> unit Deferred.Or_error.t
 val undeafen : Member_t.t -> unit Deferred.Or_error.t
 (** Opposite of {!deafen}. *)
 
+val change_nick : t -> string -> unit Async.Deferred.Or_error.t
+(** Changes the nickname of the member. *)
+
 val nick : Member_t.t -> string option
 
 val roles : Member_t.t -> Role_id.t list
