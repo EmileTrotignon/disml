@@ -40,6 +40,11 @@ let kick ?reason member =
   in
   Http.remove_member guild_id user_id payload
 
+let change_nick member nickname =
+  let (`Guild_id guild_id) = member.guild_id in
+  let (`User_id user_id) = member.user.id in
+  Http.edit_member guild_id user_id (`Assoc [("nick", `String nickname)])
+
 let mute member =
   let (`Guild_id guild_id) = member.guild_id in
   let (`User_id user_id) = member.user.id in
