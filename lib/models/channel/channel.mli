@@ -51,3 +51,7 @@ val get_pins : t -> Message_t.t list Deferred.Or_error.t
 
 val bulk_delete : Snowflake.t list -> t -> unit Deferred.Or_error.t
 (* TODO more things related to guild channels *)
+
+module Set : Core.Set.S with type Elt.t = t
+
+module Map : Core.Map.S with type Key.t = t

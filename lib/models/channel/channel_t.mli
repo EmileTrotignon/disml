@@ -98,3 +98,6 @@ val unwrap_as_category : channel_wrapper -> category
 val wrap : channel_wrapper -> t
 
 val get_id : t -> Snowflake.t
+
+val compare : t -> t -> int
+

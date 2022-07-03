@@ -179,7 +179,7 @@ val leave_guild : int -> unit Deferred.Or_error.t
 
 val get_private_channels : unit -> Yojson.Safe.t Deferred.Or_error.t
 
-val create_dm : Yojson.Safe.t -> Yojson.Safe.t Deferred.Or_error.t
+val create_dm : Yojson.Safe.t -> Channel_t.t Deferred.Or_error.t
 
 val create_group_dm : Yojson.Safe.t -> Yojson.Safe.t Deferred.Or_error.t
 

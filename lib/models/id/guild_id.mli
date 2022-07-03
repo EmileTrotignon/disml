@@ -58,3 +58,7 @@ val set_icon : icon:string -> t -> Guild_t.t Deferred.Or_error.t
 
 val unban_user :
   id:Snowflake.t -> ?reason:string -> t -> unit Deferred.Or_error.t
+
+module Set : Core.Set.S with type Elt.t = t
+
+module Map : Core.Map.S with type Key.t = t

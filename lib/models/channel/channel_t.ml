@@ -184,3 +184,5 @@ let get_id (c : t) =
   | `Category c ->
       let (`Channel_id id) = c.id in
       id
+
+let compare ch1 ch2 = Int.compare (get_id ch1) (get_id ch2)
