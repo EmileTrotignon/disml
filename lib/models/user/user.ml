@@ -21,6 +21,5 @@ let face user =
   | None ->
       default_avatar user
 
-let hash user = User_id.hash user.id
-
-let compare user user' = User_id.compare user.id user'.id
+module Set = Set.Make (User_t)
+module Map = Map.Make (User_t)

@@ -25,3 +25,11 @@ type t =
   ; avatar: string option [@default None]
   ; bot: bool [@default false] }
 [@@deriving sexp, yojson {strict= false; exn= true}]
+
+let hash (`User_id t) = Snowflake.hash t
+
+let compare (`User_id t) (`User_id t') = Snowflake.compare t t'
+
+let hash user = hash user.id
+
+let compare user user' = compare user.id user'.id

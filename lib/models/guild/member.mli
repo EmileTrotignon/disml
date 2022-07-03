@@ -45,3 +45,7 @@ val is_mute : Member_t.t -> bool
 val user : Member_t.t -> User_t.t
 
 val guild_id : Member_t.t -> Guild_id_t.t
+
+module Set : Core.Set.S with type Elt.t = t
+
+module Map : Core.Map.S with type Key.t = t

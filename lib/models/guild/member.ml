@@ -78,3 +78,6 @@ let is_mute member = member.mute
 let user member = member.user
 
 let guild_id member = member.guild_id
+
+module Set = Set.Make (Member_t)
+module Map = Map.Make (Member_t)

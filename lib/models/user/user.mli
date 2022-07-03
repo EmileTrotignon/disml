@@ -12,6 +12,6 @@ val default_avatar : t -> Endpoints.t
 val face : t -> Endpoints.t
 (** The avatar url of the user, falling back to the default avatar. *)
 
-val hash : t -> int
+module Set : Core.Set.S with type Elt.t = t
 
-val compare : t -> t -> int
+module Map : Core.Map.S with type Key.t = t

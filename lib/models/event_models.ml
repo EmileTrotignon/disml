@@ -416,11 +416,11 @@ module GuildMemberUpdate = struct
       match Cache.GuildMap.find_opt t.guild_id cache.guilds with
       | Some g ->
           let members =
-            List.map
+            (*List.map
               (fun (m : Member_t.t) ->
                 if m.user.id = t.user.id then
                   {m with nick= t.nick; roles= t.roles}
-                else m )
+                else m )*)
               g.members
           in
           let data = {g with members} in

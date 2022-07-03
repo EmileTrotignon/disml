@@ -16,7 +16,6 @@ let r_emoji =
     "/channel/[0-9]+/messages/[0-9]+/reactions/[A-Za-z0-9_\\-]+/\\(@me|[0-9]+\\)"
 
 let route_of_path meth path =
-<<<<<<< HEAD
   match meth with
   | `Delete ->
       if Str.string_match r_message_delete path 0 then Str.matched_string path
@@ -25,12 +24,6 @@ let route_of_path meth path =
       if Str.string_match r_emoji path 0 then Str.matched_string path else path
   | _ ->
       path
-=======
-    match meth with
-    | `Delete -> if Str.string_match r_message_delete path 0 then Str.matched_string path else path
-    | `Put -> if Str.string_match r_emoji path 0 then Str.matched_string path else path
-    | _ -> path
->>>>>>> e503b74 (first fixes)
 
 let rl_of_header h =
   let module C = Cohttp.Header in

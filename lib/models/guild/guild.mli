@@ -56,7 +56,7 @@ val prune : days:int -> t -> (int, string) Lwt_result.t
 
 val request_members : t -> (Member_t.t list, string) Lwt_result.t
 
-val request_roles : t -> Role_t.t list Deferred.Or_error.t
+val request_roles : t -> (Role_t.t list, string) Lwt_result.t
 
 val set_afk_channel : id:Snowflake.t -> t -> (Guild_t.t, string) Lwt_result.t
 

@@ -48,3 +48,6 @@ let get_pins ch = Http.get_pinned_messages (get_id ch)
 let bulk_delete msgs ch =
   let msgs = `List (List.map (fun id -> `Int id) msgs) in
   Http.bulk_delete (get_id ch) msgs
+
+module Set = Set.Make (Channel_id_t)
+module Map = Map.Make (Channel_id_t)

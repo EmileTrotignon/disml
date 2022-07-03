@@ -49,3 +49,7 @@ val get_pins : t -> (Message_t.t list, string) Lwt_result.t
 
 val bulk_delete : Snowflake.t list -> t -> (unit, string) Lwt_result.t
 (* TODO more things related to guild channels *)
+
+module Set : Core.Set.S with type Elt.t = t
+
+module Map : Core.Map.S with type Key.t = t

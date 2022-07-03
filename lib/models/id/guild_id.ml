@@ -1,3 +1,4 @@
+open Core
 include Guild_id_t
 
 let ban_user ~id ?(reason = "") ?(days = 0) guild =
@@ -86,3 +87,6 @@ let unban_user ~id ?reason guild =
     match reason with Some r -> `Assoc [("reason", `String r)] | None -> `Null
   in
   Http.guild_ban_remove (get_id guild) id payload
+
+module Set = Set.Make (Guild_id_t)
+module Map = Map.Make (Guild_id_t)

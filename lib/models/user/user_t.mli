@@ -18,3 +18,7 @@ type t =
         (** The hash of the user avatar, if they have one set. See {!User.face} to get the avatar URL. *)
   ; bot: bool  (** Whether the user is a bot. *) }
 [@@deriving sexp, yojson {exn= true}]
+
+val hash : t -> int
+
+val compare : t -> t -> int

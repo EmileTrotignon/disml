@@ -37,3 +37,7 @@ type t =
 [@@deriving sexp, yojson {exn= true}]
 
 val wrap : guild_id:Snowflake.t -> member -> t
+
+val compare : t -> t -> int
+
+val hash : t -> int

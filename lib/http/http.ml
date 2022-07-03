@@ -381,7 +381,10 @@ let leave_guild guild_id =
 
 let get_private_channels () = Base.request `Get Endpoints.me_channels
 
-let create_dm body = Base.request ~body `Post Endpoints.me_channels
+let create_dm body =
+  Base.request ~body `Post Endpoints.me_channels
+  >>| Result.map ~f:(fun c ->
+          Channel_t.(channel_wrapper_of_yojson_exn c |> wrap) )
 
 let create_group_dm body = Base.request ~body `Post Endpoints.me_channels
 

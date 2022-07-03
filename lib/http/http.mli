@@ -182,7 +182,7 @@ val leave_guild : int -> (unit, string) Lwt_result.t
 
 val get_private_channels : unit -> (Yojson.Safe.t, string) Lwt_result.t
 
-val create_dm : Yojson.Safe.t -> (Yojson.Safe.t, string) Lwt_result.t
+val create_dm : Yojson.Safe.t -> (Channel_t.t, string) Lwt_result.t
 
 val create_group_dm : Yojson.Safe.t -> (Yojson.Safe.t, string) Lwt_result.t
 

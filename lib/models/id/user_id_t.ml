@@ -1,12 +1,8 @@
 type t = [`User_id of Snowflake.t] [@@deriving sexp]
 
-<<<<<<< HEAD
-let compare (`User_id t) (`User_id t') = Base.Int.compare t t'
-=======
 let hash (`User_id t) = Snowflake.hash t
 
 let compare (`User_id t) (`User_id t') = Snowflake.compare t t'
->>>>>>> 24526c8 (lots of boilerplate)
 
 let of_yojson a : (t, string) result =
   match Snowflake.of_yojson a with
