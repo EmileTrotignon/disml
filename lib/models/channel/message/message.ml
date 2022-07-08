@@ -59,3 +59,12 @@ let set_embed msg embed =
   let (`Message_id id) = msg.id in
   let (`Channel_id channel_id) = msg.channel_id in
   to_yojson {msg with embeds= [embed]} |> Http.edit_message channel_id id
+
+let link msg =
+  let (`Channel_id channel_id) = msg.channel_id in
+  let (`Message_id msg_id) = msg.id in
+  match msg.guild_id with
+  | None ->
+      sprintf "https://discord.com/channels/@me/%i/%i" channel_id msg_id
+  | Some (`Guild_id guild_id) ->
+      sprintf "https://discord.com/channels/%i/%i/%i" guild_id channel_id msg_id
