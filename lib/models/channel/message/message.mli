@@ -37,3 +37,5 @@ val set_content : t -> string -> t Deferred.Or_error.t
 
 val set_embed : t -> Embed.t -> t Deferred.Or_error.t
 (** Set the embed of the message. *)
+
+val link : t -> string
