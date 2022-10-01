@@ -1,8 +1,16 @@
 include module type of Channel_id_t
 
 exception Invalid_message
+
 exception No_message_found
 
+val send_message :
+     ?embed:Embed.t
+  -> ?content:string
+  -> ?file:string
+  -> ?tts:bool
+  -> t
+  -> (Message_t.t, string) Lwt_result.t
 (** Advanced message sending.
 
     Raises {!Invalid_message} if one of content or embed is not set.
@@ -20,26 +28,24 @@ let check_command (msg : Message.t) =
 Client.message_create := check_command
     ]}
 *)
-val send_message :
-    ?embed:Embed.t ->
-    ?content:string ->
-    ?file:string ->
-    ?tts:bool ->
-    t ->
-    (Message_t.t, string) Lwt_result.t
 
-(** [say str ch] is equivalent to [send_message ~content:str ch]. *)
 val say : string -> t -> (Message_t.t, string) Lwt_result.t
+(** [say str ch] is equivalent to [send_message ~content:str ch]. *)
 
 val delete : t -> (Channel_t.t, string) Lwt_result.t
+
 val get_message : id:Snowflake.t -> t -> (Message_t.t, string) Lwt_result.t
+
 val get_messages :
-    ?mode:[ `Before | `After | `Around ] ->
-    ?id:Snowflake.t ->
-    ?limit:int ->
-    t ->
-    (Message_t.t list, string) Lwt_result.t
+     ?mode:[`Before | `After | `Around]
+  -> ?id:Snowflake.t
+  -> ?limit:int
+  -> t
+  -> (Message_t.t list, string) Lwt_result.t
+
 val broadcast_typing : t -> (unit, string) Lwt_result.t
+
 val get_pins : t -> (Message_t.t list, string) Lwt_result.t
+
 val bulk_delete : Snowflake.t list -> t -> (unit, string) Lwt_result.t
 (* TODO more things related to guild channels *)

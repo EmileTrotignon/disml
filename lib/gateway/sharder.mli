@@ -3,104 +3,85 @@
 open Websocket
 
 exception Invalid_Payload
+
 exception Failure_to_Establish_Heartbeat
 
 (** Module representing a single shard. *)
 module Shard : sig
-    (** Representation of the state of a shard. *)
-    type shard =
-    { compress: bool (** Whether to compress payloads. *)
-    ; hb_interval: int Lwt.t * int Lwt.u (** Time between heartbeats. Not known until HELLO is received. *)
-    ; hb_stopper: Lwt_engine.event option (** Used to cancel heartbeat sequencer *)
-    ; hb_acked: bool (** Whether the last heartbeat was acked. Missing an ack will reconnect the shard. *)
-    ; id: int (** ID of the current shard. Must be less than shard_count. *)
-    ; large_threshold: int (** Minimum number of members needed for a guild to be considered large. *)
-    ; ready: unit Lwt.t * unit Lwt.u (** A simple promise indicating if the shard has received READY. *)
-    ; recv: (unit -> Frame.t Lwt.t) (** Receiver function for the websocket. *)
-    ; send: (Frame.t -> unit Lwt.t) (** Sender function for the websocket. *)
-    ; seq: int (** Current sequence number for the session. *)
-    ; session: string option (** Current session ID *)
-    ; shard_count: int (** Total number of shards. *)
-    ; url: string (** The websocket URL. *)
-    }
+  (** Representation of the state of a shard. *)
+  type shard =
+    { compress: bool  (** Whether to compress payloads. *)
+    ; hb_interval: int Lwt.t * int Lwt.u
+          (** Time between heartbeats. Not known until HELLO is received. *)
+    ; hb_stopper: Lwt_engine.event option
+          (** Used to cancel heartbeat sequencer *)
+    ; hb_acked: bool
+          (** Whether the last heartbeat was acked. Missing an ack will reconnect the shard. *)
+    ; id: int  (** ID of the current shard. Must be less than shard_count. *)
+    ; large_threshold: int
+          (** Minimum number of members needed for a guild to be considered large. *)
+    ; ready: unit Lwt.t * unit Lwt.u
+          (** A simple promise indicating if the shard has received READY. *)
+    ; recv: unit -> Frame.t Lwt.t  (** Receiver function for the websocket. *)
+    ; send: Frame.t -> unit Lwt.t  (** Sender function for the websocket. *)
+    ; seq: int  (** Current sequence number for the session. *)
+    ; session: string option  (** Current session ID *)
+    ; shard_count: int  (** Total number of shards. *)
+    ; url: string  (** The websocket URL. *) }
 
-    (** Wrapper around an internal state, used to wrap {!shard}. *)
-    type 'a t =
+  (** Wrapper around an internal state, used to wrap {!shard}. *)
+  type 'a t =
     { mutable state: 'a
     ; mutable stop: unit Lwt.t * unit Lwt.u
-    ; mutable can_resume: bool
-    }
+    ; mutable can_resume: bool }
 
-    (** Send a heartbeat to Discord. This is handled automatically. *)
-    val heartbeat :
-        shard ->
-        shard Lwt.t
+  val heartbeat : shard -> shard Lwt.t
+  (** Send a heartbeat to Discord. This is handled automatically. *)
 
-    (** Set the status of the shard. *)
-    val set_status :
-        ?status:string ->
-        ?kind:int ->
-        ?name:string ->
-        ?since:int ->
-        ?url:string ->
-        shard ->
-        shard Lwt.t
+  val set_status :
+       ?status:string
+    -> ?kind:int
+    -> ?name:string
+    -> ?since:int
+    -> ?url:string
+    -> shard
+    -> shard Lwt.t
+  (** Set the status of the shard. *)
 
-    (** Request guild members for the shard's guild. Causes dispatch of multiple {{!Dispatch.members_chunk}member chunk} events. *)
-    val request_guild_members :
-        ?query:string ->
-        ?limit:int ->
-        guild:Snowflake.t ->
-        shard ->
-        shard Lwt.t
+  val request_guild_members :
+    ?query:string -> ?limit:int -> guild:Snowflake.t -> shard -> shard Lwt.t
+  (** Request guild members for the shard's guild. Causes dispatch of multiple {{!Dispatch.members_chunk}member chunk} events. *)
 
-    (** Create a new shard *)
-    val create :
-        url:string ->
-        shards:int * int ->
-        ?compress:bool ->
-        ?large_threshold:int ->
-        unit ->
-        shard Lwt.t
+  val create :
+       url:string
+    -> shards:int * int
+    -> ?compress:bool
+    -> ?large_threshold:int
+    -> unit
+    -> shard Lwt.t
+  (** Create a new shard *)
 
-    val shutdown :
-        ?clean:bool ->
-        ?restart:bool ->
-        shard t ->
-        unit Lwt.t
+  val shutdown : ?clean:bool -> ?restart:bool -> shard t -> unit Lwt.t
 end
 
-type t =
-{ shards: Shard.shard Shard.t list
-}
+type t = {shards: Shard.shard Shard.t list}
 
-(** Start the Sharder. This is called by {!Client.start}. *)
 val start :
-    ?count:int ->
-    ?compress:bool ->
-    ?large_threshold:int ->
-    unit ->
-    t Lwt.t
+  ?count:int -> ?compress:bool -> ?large_threshold:int -> unit -> t Lwt.t
+(** Start the Sharder. This is called by {!Client.start}. *)
 
-(** Calls {!Shard.set_status} for each shard registered with the sharder. *)
 val set_status :
-    ?status:string ->
-    ?kind:int ->
-    ?name:string ->
-    ?since:int ->
-    ?url:string ->
-    t ->
-    unit Lwt.t
+     ?status:string
+  -> ?kind:int
+  -> ?name:string
+  -> ?since:int
+  -> ?url:string
+  -> t
+  -> unit Lwt.t
+(** Calls {!Shard.set_status} for each shard registered with the sharder. *)
 
-(** Calls {!Shard.request_guild_members} for each shard registered with the sharder. *)
 val request_guild_members :
-    ?query:string ->
-    ?limit:int ->
-    guild:Snowflake.t ->
-    t ->
-    unit Lwt.t
+  ?query:string -> ?limit:int -> guild:Snowflake.t -> t -> unit Lwt.t
+(** Calls {!Shard.request_guild_members} for each shard registered with the sharder. *)
 
-val shutdown_all :
-    ?restart:bool ->
-    t ->
-    unit Lwt.t
+val shutdown_all : ?restart:bool -> t -> unit Lwt.t
