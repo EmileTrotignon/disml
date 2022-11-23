@@ -71,3 +71,7 @@ type t =
 val wrap : pre -> t
 
 val get_id : t -> Snowflake.t
+
+val hash : t -> int
+
+val compare : t -> t -> int

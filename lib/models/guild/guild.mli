@@ -2,10 +2,6 @@ open Async
 
 include module type of Guild_t
 
-val hash : t -> int
-
-val compare : t -> t -> int
-
 val ban_user :
   id:Snowflake.t -> ?reason:string -> ?days:int -> t -> unit Deferred.Or_error.t
 
@@ -150,3 +146,7 @@ val members : t -> Member_t.t list
 
 val channels : t -> Channel_t.t list
 (** List of guild channels. *)
+
+module Set : Core.Set.S with type Elt.t = t
+
+module Map : Core.Map.S with type Key.t = t

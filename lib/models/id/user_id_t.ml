@@ -6,6 +6,8 @@ let hash (`User_id t) = Snowflake.hash t
 
 let compare (`User_id t) (`User_id t') = Snowflake.compare t t'
 
+let ( = ) t1 t2 = compare t1 t2 = 0
+
 let of_yojson a : (t, string) result =
   match Snowflake.of_yojson a with
   | Ok id ->

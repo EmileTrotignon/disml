@@ -6,6 +6,8 @@ let compare (`Message_id t) (`Message_id t') = Snowflake.compare t t'
 
 let hash (`Message_id t : t) = Snowflake.hash t
 
+let ( = ) t1 t2 = compare t1 t2 = 0
+
 let of_yojson a : (t, string) result =
   match Snowflake.of_yojson a with
   | Ok id ->

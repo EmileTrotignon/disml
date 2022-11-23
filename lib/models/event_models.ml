@@ -6,7 +6,7 @@ module ChannelCreate = struct
   let deserialize ev = Channel_t.(channel_wrapper_of_yojson_exn ev |> wrap)
 
   let update_cache (cache : Cache.t) (t : t) =
-    let module C = Cache.ChannelMap in
+    let module C = Channel_id.Map in
     match t with
     | `GuildText c ->
         let text_channels =
@@ -41,7 +41,7 @@ module ChannelDelete = struct
   let deserialize ev = Channel_t.(channel_wrapper_of_yojson_exn ev |> wrap)
 
   let update_cache (cache : Cache.t) (t : t) =
-    let module C = Cache.ChannelMap in
+    let module C = Channel_id.Map in
     match t with
     | `GuildText c ->
         let text_channels = C.remove cache.text_channels c.id in
@@ -66,7 +66,7 @@ module ChannelUpdate = struct
   let deserialize ev = Channel_t.(channel_wrapper_of_yojson_exn ev |> wrap)
 
   let update_cache (cache : Cache.t) (t : t) =
-    let module C = Cache.ChannelMap in
+    let module C = Channel_id.Map in
     match t with
     | `GuildText c ->
         let text_channels =
@@ -115,7 +115,7 @@ module ChannelPinsUpdate = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    let module C = Cache.ChannelMap in
+    let module C = Channel_id.Map in
     if C.mem cache.private_channels t.channel_id then
       let private_channels =
         match C.find cache.private_channels t.channel_id with
@@ -199,12 +199,12 @@ module GuildCreate = struct
 
   let update_cache (cache : Cache.t) (t : t) =
     let open Channel_t in
-    let module C = Cache.ChannelMap in
+    let module C = Channel_id.Map in
     let guilds =
-      Cache.GuildMap.update cache.guilds t.id ~f:(function Some _ | None -> t)
+      Guild_id.Map.update cache.guilds t.id ~f:(function Some _ | None -> t)
     in
     let unavailable_guilds =
-      Cache.GuildMap.remove cache.unavailable_guilds t.id
+      Guild_id.Map.remove cache.unavailable_guilds t.id
     in
     let text, voice, cat = (ref [], ref [], ref []) in
     List.iter t.channels ~f:(function
@@ -248,9 +248,9 @@ module GuildCreate = struct
     in
     let users = List.map t.members ~f:(fun m -> (m.user.id, m.user)) in
     let users =
-      match Cache.UserMap.of_alist users with
+      match User_id.Map.of_alist users with
       | `Ok m ->
-          Cache.UserMap.merge m cache.users ~f:(fun ~key -> function
+          User_id.Map.merge m cache.users ~f:(fun ~key -> function
             | `Both (u, _) | `Left u | `Right u ->
                 let _ = key in
                 Some u )
@@ -273,8 +273,8 @@ module GuildDelete = struct
 
   let update_cache (cache : Cache.t) (t : t) =
     let open Channel_t in
-    let module G = Cache.GuildMap in
-    let module C = Cache.ChannelMap in
+    let module G = Guild_id.Map in
+    let module C = Channel_id.Map in
     if t.unavailable then
       let guilds = G.remove cache.guilds t.id in
       let unavailable_guilds =
@@ -315,7 +315,7 @@ module GuildUpdate = struct
     let open Guild_t in
     let {id; _} = t in
     let guilds =
-      Cache.GuildMap.update cache.guilds id ~f:(function Some _ | None -> t)
+      Guild_id.Map.update cache.guilds id ~f:(function Some _ | None -> t)
     in
     {cache with guilds}
 end
@@ -327,11 +327,11 @@ module GuildEmojisUpdate = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    if Cache.GuildMap.mem cache.guilds t.guild_id then
+    if Guild_id.Map.mem cache.guilds t.guild_id then
       let guilds =
-        match Cache.GuildMap.find cache.guilds t.guild_id with
+        match Guild_id.Map.find cache.guilds t.guild_id with
         | Some g ->
-            Cache.GuildMap.set cache.guilds ~key:t.guild_id
+            Guild_id.Map.set cache.guilds ~key:t.guild_id
               ~data:{g with emojis= t.emojis}
         | None ->
             cache.guilds
@@ -348,13 +348,13 @@ module GuildMemberAdd = struct
   let deserialize = Member_t.of_yojson_exn
 
   let update_cache (cache : Cache.t) (t : t) =
-    if Cache.GuildMap.mem cache.guilds t.guild_id then
+    if Guild_id.Map.mem cache.guilds t.guild_id then
       let guilds =
-        match Cache.GuildMap.find cache.guilds t.guild_id with
+        match Guild_id.Map.find cache.guilds t.guild_id with
         | Some g ->
             let members = t :: g.members in
             let data = {g with members} in
-            Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
+            Guild_id.Map.set cache.guilds ~key:t.guild_id ~data
         | None ->
             cache.guilds
       in
@@ -369,16 +369,16 @@ module GuildMemberRemove = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    if Cache.GuildMap.mem cache.guilds t.guild_id then
+    if Guild_id.Map.mem cache.guilds t.guild_id then
       let guilds =
-        match Cache.GuildMap.find cache.guilds t.guild_id with
+        match Guild_id.Map.find cache.guilds t.guild_id with
         | Some g ->
             let members =
               List.filter g.members ~f:(fun m ->
                   User_id_t.get_id m.user.id <> User_id.get_id t.user.id )
             in
             let data = {g with members} in
-            Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
+            Guild_id.Map.set cache.guilds ~key:t.guild_id ~data
         | None ->
             cache.guilds
       in
@@ -396,9 +396,9 @@ module GuildMemberUpdate = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    if Cache.GuildMap.mem cache.guilds t.guild_id then
+    if Guild_id.Map.mem cache.guilds t.guild_id then
       let guilds =
-        match Cache.GuildMap.find cache.guilds t.guild_id with
+        match Guild_id.Map.find cache.guilds t.guild_id with
         | Some g ->
             let members =
               List.map g.members ~f:(fun m ->
@@ -407,7 +407,7 @@ module GuildMemberUpdate = struct
                   else m )
             in
             let data = {g with members} in
-            Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
+            Guild_id.Map.set cache.guilds ~key:t.guild_id ~data
         | None ->
             cache.guilds
       in
@@ -422,7 +422,7 @@ module GuildMembersChunk = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    match Cache.GuildMap.find cache.guilds t.guild_id with
+    match Guild_id.Map.find cache.guilds t.guild_id with
     | None ->
         cache
     | Some g ->
@@ -437,12 +437,12 @@ module GuildMembersChunk = struct
               else None )
         in
         let guilds =
-          Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data:{g with members}
+          Guild_id.Map.set cache.guilds ~key:t.guild_id ~data:{g with members}
         in
         let users =
-          match Cache.UserMap.of_alist users with
+          match User_id.Map.of_alist users with
           | `Ok m ->
-              Cache.UserMap.merge m cache.users ~f:(fun ~key -> function
+              User_id.Map.merge m cache.users ~f:(fun ~key -> function
                 | `Both (u, _) | `Left u | `Right u ->
                     let _ = key in
                     Some u )
@@ -459,14 +459,14 @@ module GuildRoleCreate = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    if Cache.GuildMap.mem cache.guilds t.guild_id then
+    if Guild_id.Map.mem cache.guilds t.guild_id then
       let guilds =
-        match Cache.GuildMap.find cache.guilds t.guild_id with
+        match Guild_id.Map.find cache.guilds t.guild_id with
         | Some g ->
             let (`Guild_id guild_id) = t.guild_id in
             let roles = Role_t.wrap ~guild_id t.role :: g.roles in
             let data = {g with roles} in
-            Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
+            Guild_id.Map.set cache.guilds ~key:t.guild_id ~data
         | None ->
             cache.guilds
       in
@@ -481,16 +481,16 @@ module GuildRoleDelete = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    if Cache.GuildMap.mem cache.guilds t.guild_id then
+    if Guild_id.Map.mem cache.guilds t.guild_id then
       let guilds =
-        match Cache.GuildMap.find cache.guilds t.guild_id with
+        match Guild_id.Map.find cache.guilds t.guild_id with
         | Some g ->
             let roles =
               List.filter g.roles ~f:(fun r ->
                   Role_id.get_id r.id <> Role_id.get_id t.role_id )
             in
             let data = {g with roles} in
-            Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
+            Guild_id.Map.set cache.guilds ~key:t.guild_id ~data
         | None ->
             cache.guilds
       in
@@ -505,9 +505,9 @@ module GuildRoleUpdate = struct
   let deserialize = of_yojson_exn
 
   let update_cache (cache : Cache.t) t =
-    if Cache.GuildMap.mem cache.guilds t.guild_id then
+    if Guild_id.Map.mem cache.guilds t.guild_id then
       let guilds =
-        match Cache.GuildMap.find cache.guilds t.guild_id with
+        match Guild_id.Map.find cache.guilds t.guild_id with
         | Some g ->
             let (`Guild_id guild_id) = t.guild_id in
             let roles =
@@ -517,7 +517,7 @@ module GuildRoleUpdate = struct
                   else r )
             in
             let data = {g with roles} in
-            Cache.GuildMap.set cache.guilds ~key:t.guild_id ~data
+            Guild_id.Map.set cache.guilds ~key:t.guild_id ~data
         | None ->
             cache.guilds
       in
@@ -593,7 +593,7 @@ module PresenceUpdate = struct
   let update_cache (cache : Cache.t) (t : t) =
     let id = t.user.id in
     let presences =
-      Cache.UserMap.update cache.presences id ~f:(function Some _ | None -> t)
+      User_id.Map.update cache.presences id ~f:(function Some _ | None -> t)
     in
     {cache with presences}
 end
@@ -658,11 +658,10 @@ module Ready = struct
   let update_cache (cache : Cache.t) t =
     let unavailable_guilds =
       match
-        List.map t.guilds ~f:(fun g -> (g.id, g)) |> Cache.GuildMap.of_alist
+        List.map t.guilds ~f:(fun g -> (g.id, g)) |> Guild_id.Map.of_alist
       with
       | `Ok m ->
-          Cache.GuildMap.merge m cache.unavailable_guilds ~f:(fun ~key ->
-            function
+          Guild_id.Map.merge m cache.unavailable_guilds ~f:(fun ~key -> function
             | `Both (g, _) | `Left g | `Right g ->
                 let _ = key in
                 Some g )

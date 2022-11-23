@@ -119,3 +119,7 @@ let wrap
 let get_id guild =
   let (`Guild_id id) = guild.id in
   id
+
+let hash t = Guild_id_t.hash t.id
+
+let compare t t' = Guild_id_t.compare t.id t'.id

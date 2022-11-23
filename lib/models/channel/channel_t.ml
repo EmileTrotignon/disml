@@ -186,3 +186,5 @@ let get_id (c : t) =
       id
 
 let compare ch1 ch2 = Int.compare (get_id ch1) (get_id ch2)
+
+let hash ch = Int.hash (get_id ch)

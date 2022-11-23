@@ -56,7 +56,7 @@ let embed message _args =
              |> author_url "https://gitlab.com/Mishio595/disml" )
       |> field ("field 3", "test", true)
       |> field ("field 2", "test", true)
-      |> field ("field 1", "test", true))
+      |> field ("field 1", "test", true) )
   in
   Message.reply_with ~embed message >>> ignore
 
@@ -82,9 +82,9 @@ let echo (message : Message.t) args =
 
 (* Output cache counts as a a basic embed. *)
 let cache message _args =
-  let module C = Cache.ChannelMap in
-  let module G = Cache.GuildMap in
-  let module U = Cache.UserMap in
+  let module C = Channel_id.Map in
+  let module G = Guild_id.Map in
+  let module U = User_id.Map in
   let cache = Mvar.peek_exn Cache.cache in
   let gc = G.length cache.guilds in
   let ug = G.length cache.unavailable_guilds in
@@ -110,13 +110,13 @@ let cache message _args =
                Private Channels: %d\n\
                Users: %d\n\
                Presences: %d\n\
-               Current User: %s" gc ug tc vc cs gr pr uc pre user ))
+               Current User: %s" gc ug tc vc cs gr pr uc pre user ) )
   in
   Message.reply_with ~embed message >>> ignore
 
 (* Issue a shutdown to all shards, then exits the process. *)
 let shutdown (message : Message.t) _args =
-  if message.author.id = `User_id 242675474927583232 then
+  if User_id.(message.author.id = `User_id 242675474927583232) then
     Ivar.read client >>= Client.shutdown_all ~restart:false >>> fun _ -> exit 0
 
 (* Request guild members to be sent over the gateway for the guild the command is run in. This will cause multiple GUILD_MEMBERS_CHUNK events. *)
@@ -148,11 +148,11 @@ let delete_guilds message _args =
   let cache = Mvar.peek_exn Cache.cache in
   let uid = match cache.user with Some u -> u.id | None -> `User_id 0 in
   let guilds =
-    Cache.GuildMap.filter cache.guilds ~f:(fun g -> g.owner_id = uid)
+    Guild_id.Map.filter cache.guilds ~f:(fun g -> User_id.(g.owner_id = uid))
   in
   let res = ref "" in
   let all =
-    Cache.GuildMap.(
+    Guild_id.Map.(
       map guilds ~f:(fun g ->
           Guild.delete g
           >>| function
@@ -160,7 +160,7 @@ let delete_guilds message _args =
               res := Printf.sprintf "%s\nDeleted %s" !res g.name
           | Error _ ->
               () )
-      |> to_alist)
+      |> to_alist )
     |> List.map ~f:snd
   in
   Deferred.all all >>= (fun _ -> Message.reply message !res) >>> ignore
@@ -185,10 +185,11 @@ let role_test (message : Message.t) args =
     >>| function Ok () -> role | Error e -> Error.raise e
   in
   let get_member id =
-    match Cache.GuildMap.find cache.guilds id with
+    match Guild_id.Map.find cache.guilds id with
     | Some guild -> (
       match
-        List.find guild.members ~f:(fun m -> m.user.id = message.author.id)
+        List.find guild.members ~f:(fun m ->
+            User_id.(m.user.id = message.author.id) )
       with
       | Some member ->
           member
@@ -223,7 +224,9 @@ let check_permissions (message : Message.t) _args =
       match Cache.guild cache g with
       | Some g ->
           List.fold m.roles ~init:Permissions.empty ~f:(fun acc rid ->
-              let role = List.find_exn g.roles ~f:(fun r -> r.id = rid) in
+              let role =
+                List.find_exn g.roles ~f:Role_id.(fun r -> r.id = rid)
+              in
               Permissions.union acc role.permissions )
       | None ->
           empty )
@@ -239,8 +242,9 @@ let check_permissions (message : Message.t) _args =
             ~f:(fun (a, d) {allow; deny; id; kind} ->
               let (`User_id uid) = message.author.id in
               if
-                (kind = "role" && List.mem m.roles (`Role_id id) ~equal:( = ))
-                || (kind = "user" && id = uid)
+                String.(kind = "role")
+                && List.mem m.roles (`Role_id id) ~equal:Role_id.( = )
+                || (String.(kind = "user") && id = uid)
               then (Permissions.union allow a, Permissions.union deny d)
               else (a, d) )
       | None ->

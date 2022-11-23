@@ -119,10 +119,6 @@ let get_channel ~(id : Channel_id_t.t) guild =
 let get_role ~(id : Role_id.t) guild =
   List.find ~f:(fun r -> Role_id.get_id r.id = Role_id.get_id id) guild.roles
 
-let hash t = Guild_id.hash t.id
-
-let compare t t' = Guild_id.compare t.id t'.id
-
 let id guild = guild.id
 
 let name guild = guild.name
@@ -172,3 +168,6 @@ let member_count guild = guild.member_count
 let members guild = guild.members
 
 let channels guild = guild.channels
+
+module Map = Map.Make (Guild_t)
+module Set = Set.Make (Guild_t)

@@ -1,52 +1,49 @@
-open Core
 open Async
-module ChannelMap = Map.Make (Channel_id_t)
-module GuildMap = Map.Make (Guild_id_t)
-module UserMap = Map.Make (User_id_t)
 
 type t =
-  { text_channels: Channel_t.guild_text ChannelMap.t
-  ; voice_channels: Channel_t.guild_voice ChannelMap.t
-  ; categories: Channel_t.category ChannelMap.t
-  ; groups: Channel_t.group ChannelMap.t
-  ; private_channels: Channel_t.dm ChannelMap.t
-  ; guilds: Guild_t.t GuildMap.t
-  ; presences: Presence.t UserMap.t (* ; messages: Channel_id_t.t GuildMap.t *)
-  ; unavailable_guilds: Guild_t.unavailable GuildMap.t
+  { text_channels: Channel_t.guild_text Channel_id.Map.t
+  ; voice_channels: Channel_t.guild_voice Channel_id.Map.t
+  ; categories: Channel_t.category Channel_id.Map.t
+  ; groups: Channel_t.group Channel_id.Map.t
+  ; private_channels: Channel_t.dm Channel_id.Map.t
+  ; guilds: Guild_t.t Guild_id.Map.t
+  ; presences:
+      Presence.t User_id.Map.t (* ; messages: Channel_id_t.t Guild_id.Map.t *)
+  ; unavailable_guilds: Guild_t.unavailable Guild_id.Map.t
   ; user: User_t.t option
-  ; users: User_t.t UserMap.t }
+  ; users: User_t.t User_id.Map.t }
 
 let create () =
-  { text_channels= ChannelMap.empty
-  ; voice_channels= ChannelMap.empty
-  ; categories= ChannelMap.empty
-  ; groups= ChannelMap.empty
-  ; private_channels= ChannelMap.empty
-  ; guilds= GuildMap.empty
-  ; presences= UserMap.empty
-  ; unavailable_guilds= GuildMap.empty
+  { text_channels= Channel_id.Map.empty
+  ; voice_channels= Channel_id.Map.empty
+  ; categories= Channel_id.Map.empty
+  ; groups= Channel_id.Map.empty
+  ; private_channels= Channel_id.Map.empty
+  ; guilds= Guild_id.Map.empty
+  ; presences= User_id.Map.empty
+  ; unavailable_guilds= Guild_id.Map.empty
   ; user= None
-  ; users= UserMap.empty }
+  ; users= User_id.Map.empty }
 
 let cache =
   let m = Mvar.create () in
   Mvar.set m (create ()) ;
   m
 
-let guild cache = GuildMap.find cache.guilds
+let guild cache = Guild_id.Map.find cache.guilds
 
-let text_channel cache = ChannelMap.find cache.text_channels
+let text_channel cache = Channel_id.Map.find cache.text_channels
 
-let voice_channel cache = ChannelMap.find cache.voice_channels
+let voice_channel cache = Channel_id.Map.find cache.voice_channels
 
-let category cache = ChannelMap.find cache.categories
+let category cache = Channel_id.Map.find cache.categories
 
-let dm cache = ChannelMap.find cache.private_channels
+let dm cache = Channel_id.Map.find cache.private_channels
 
-let group cache = ChannelMap.find cache.groups
+let group cache = Channel_id.Map.find cache.groups
 
 let channel cache id =
-  let check = ChannelMap.find in
+  let check = Channel_id.Map.find in
   match check cache.text_channels id with
   | Some c ->
       Some (`GuildText c)

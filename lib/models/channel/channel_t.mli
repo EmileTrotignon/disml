@@ -101,3 +101,4 @@ val get_id : t -> Snowflake.t
 
 val compare : t -> t -> int
 
+val hash : t -> int

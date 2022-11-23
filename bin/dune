@@ -1,5 +1,4 @@
 (executable
-	(name bot)
-	(modules bot commands)
-	(libraries core async_ssl disml)
-)
+ (name bot)
+ (modules bot commands)
+ (libraries core async_ssl disml))

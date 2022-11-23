@@ -5,3 +5,5 @@ val get_id : t -> Snowflake.t
 val hash : t -> int
 
 val compare : t -> t -> int
+
+val ( = ) : t -> t -> bool
