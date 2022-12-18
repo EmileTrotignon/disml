@@ -19,6 +19,16 @@ type t =
   ; bot: bool  (** Whether the user is a bot. *) }
 [@@deriving sexp, yojson {exn= true}]
 
+val id : t -> User_id_t.t
+
+val username : t -> string
+
+val discriminator : t -> string
+
+val avatar : t -> string option
+
+val bot : t -> bool
+
 val hash : t -> int
 
 val compare : t -> t -> int
